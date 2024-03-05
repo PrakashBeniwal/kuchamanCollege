@@ -1,18 +1,21 @@
 const express=require('express');
-const auth = require('./resource/auth');
-// const product = require('./resource/product');
-const category = require('./resource/category');
-const product = require('./resource/product');
+const course = require('./resource/course');
 const department = require('./resource/department');
-// const category = require('./resource/category');
+const syllabus = require('./resource/syllabus');
+const contact = require('./resource/contact');
+const college = require('./resource/college');
+const member = require('./resource/member');
 
 
 
 const restrouter=express.Router();
 
-restrouter.use('/auth',auth)
-restrouter.use('/product',product)
-restrouter.use('/category',category)
+restrouter.use('/course',course)
 restrouter.use('/department',department)
+restrouter.use('/syllabus',syllabus)
+restrouter.use('/contact',contact)
+restrouter.use('/college',college)
+restrouter.use('/member',member)
+
 
 module.exports=restrouter;

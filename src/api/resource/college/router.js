@@ -1,5 +1,6 @@
 const express=require('express');
-const routes = require('./department.controller');
+const routes = require('./controller');
+const upload = require('../../../upload');
 
 
 const router=express.Router();
@@ -7,7 +8,6 @@ const router=express.Router();
 router.route("/create").post(routes.create);
 router.route("/list").get(routes.list);
 router.route("/delete").delete(routes.delete);
-router.route("/getDepartmentById").get(routes.getDepartmentById);
-router.route("/getDepartmentByName").get(routes.getDepartmentByName);
+router.route("/getById").get(routes.getcollegeById);
 
 module.exports=router;

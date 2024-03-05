@@ -2,27 +2,27 @@ const db = require("../../../../models");
 
 const routes={
      create:(req,res)=>{
-        const{name,about,image}=req.body;
+        const{name,post,number,image}=req.body;
 
-        if (!name||!about) {
-            res.status(400).json({mess:"please provide name and about"});
+        if (!name||!post||!image) {
+            res.status(400).json({mess:"please provide name ,image and post "});
             return;
         }
 
-        db.department.findOne({
+        db.member.findOne({
             where:{name}
         })
-        .then(department=>{
-            if (department) {
-                department.update({
-                    name,about,image
+        .then(member=>{
+            if (member) {
+                member.update({
+                    name,post,image,number
                 })
                 .then(result=>{
                     if (result) {
-                        res.status(200).json({mess:"successfully updated department"});
+                        res.status(200).json({mess:"successfully updated member"});
                         return;
                     }
-                    res.status(400).json({mess:"cannot updated department"});
+                    res.status(400).json({mess:"cannot updated member"});
                     return;
                 })
                 .catch(err=>{
@@ -31,15 +31,15 @@ const routes={
                 })
                 return;
             }
-            db.department.create({
-                name,about,image
+            db.member.create({
+                name,post,image,number
             })
             .then(result=>{
                 if (result) {
-                    res.status(200).json({mess:"successfully created department"});
+                    res.status(200).json({mess:"successfully created member"});
                     return;
                 }
-                res.status(400).json({mess:"cannot created department"});
+                res.status(400).json({mess:"cannot created member"});
                 return;
             })
             .catch(err=>{
@@ -55,13 +55,13 @@ const routes={
     },
 
     list:(req,res)=>{
-        db.department.findAll()
+        db.member.findAll()
         .then(c=>{
             if (c.length>0) {
                 res.status(200).json({list:c});
                 return;
             }
-            res.status(400).json({mess:"departments not available"})
+            res.status(400).json({mess:"members not available"})
         })
         .catch(err=>{
             console.log(err)
@@ -73,26 +73,26 @@ const routes={
         const{id}=req.query
 
         if (!id) {
-            res.status(400).json({mess:"please provide departmentId"});
+            res.status(400).json({mess:"please provide memberId"});
             return;
         }
 
-        db.department.findByPk(id)
+        db.member.findByPk(id)
         .then(c=>{
             if (!c) {
-                res.status(400).json({mess:"department not exist"})
+                res.status(400).json({mess:"member not exist"})
                 return;
             }
             c.destroy()
             .then(success=>{
                 if (success) {
-                    res.status(200).json({mess:"successfully deleted department"})
+                    res.status(200).json({mess:"successfully deleted member"})
                     return;
                 }
-                res.status(400).json({mess:"error in  deleting department"})
+                res.status(400).json({mess:"error in  deleting member"})
             }).catch(err=>{
                 console.log(err)
-                res.status(400).json({mess:"error occure in deleting department"})
+                res.status(400).json({mess:"error occure in deleting member"})
             })
            
         })
@@ -102,40 +102,40 @@ const routes={
         })
     },
 
-    getDepartmentById:(req,res)=>{
+    getmemberById:(req,res)=>{
         const{id}=req.query
         if (!id) {
-            res.status(400).json({mess:"please provide DepartmentId"});
+            res.status(400).json({mess:"please provide memberId"});
             return;
         }
 
-        db.department.findAll({where:{id}})
+        db.member.findAll({where:{id}})
         .then(c=>{
             if (c) {
                 res.status(200).json({list:c});
                 return;
             }
-            res.status(400).json({mess:"department not available"})
+            res.status(400).json({mess:"member not available"})
         })
         .catch(err=>{
             console.log(err)
             res.status(400).json({mess:"some error occure at server"})
         })
     },
-    getDepartmentByName:(req,res)=>{
+    getmemberByName:(req,res)=>{
         const{name}=req.query
         if (!name) {
-            res.status(400).json({mess:"please provide Department Name"});
+            res.status(400).json({mess:"please provide member Name"});
             return;
         }
 
-        db.department.findAll({where:{name}})
+        db.member.findAll({where:{name}})
         .then(c=>{
             if (c) {
                 res.status(200).json({list:c});
                 return;
             }
-            res.status(400).json({mess:"department not available"})
+            res.status(400).json({mess:"member not available"})
         })
         .catch(err=>{
             console.log(err)

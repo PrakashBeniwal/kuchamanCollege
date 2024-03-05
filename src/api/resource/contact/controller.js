@@ -2,27 +2,27 @@ const db = require("../../../../models");
 
 const routes={
      create:(req,res)=>{
-        const{name,about,image}=req.body;
+        const{relatedWork,email,number}=req.body;
 
-        if (!name||!about) {
+        if (!relatedWork) {
             res.status(400).json({mess:"please provide name and about"});
             return;
         }
 
-        db.department.findOne({
-            where:{name}
+        db.contact.findOne({
+            where:{relatedWork}
         })
-        .then(department=>{
-            if (department) {
-                department.update({
-                    name,about,image
+        .then(contact=>{
+            if (contact) {
+                contact.update({
+                    relatedWork,email,number
                 })
                 .then(result=>{
                     if (result) {
-                        res.status(200).json({mess:"successfully updated department"});
+                        res.status(200).json({mess:"successfully updated contact"});
                         return;
                     }
-                    res.status(400).json({mess:"cannot updated department"});
+                    res.status(400).json({mess:"cannot updated contact"});
                     return;
                 })
                 .catch(err=>{
@@ -31,15 +31,15 @@ const routes={
                 })
                 return;
             }
-            db.department.create({
-                name,about,image
+            db.contact.create({
+                relatedWork,email,number
             })
             .then(result=>{
                 if (result) {
-                    res.status(200).json({mess:"successfully created department"});
+                    res.status(200).json({mess:"successfully created contact"});
                     return;
                 }
-                res.status(400).json({mess:"cannot created department"});
+                res.status(400).json({mess:"cannot created contact"});
                 return;
             })
             .catch(err=>{
@@ -55,13 +55,13 @@ const routes={
     },
 
     list:(req,res)=>{
-        db.department.findAll()
+        db.contact.findAll()
         .then(c=>{
             if (c.length>0) {
                 res.status(200).json({list:c});
                 return;
             }
-            res.status(400).json({mess:"departments not available"})
+            res.status(400).json({mess:"contacts not available"})
         })
         .catch(err=>{
             console.log(err)
@@ -73,26 +73,26 @@ const routes={
         const{id}=req.query
 
         if (!id) {
-            res.status(400).json({mess:"please provide departmentId"});
+            res.status(400).json({mess:"please provide contactId"});
             return;
         }
 
-        db.department.findByPk(id)
+        db.contact.findByPk(id)
         .then(c=>{
             if (!c) {
-                res.status(400).json({mess:"department not exist"})
+                res.status(400).json({mess:"contact not exist"})
                 return;
             }
             c.destroy()
             .then(success=>{
                 if (success) {
-                    res.status(200).json({mess:"successfully deleted department"})
+                    res.status(200).json({mess:"successfully deleted contact"})
                     return;
                 }
-                res.status(400).json({mess:"error in  deleting department"})
+                res.status(400).json({mess:"error in  deleting contact"})
             }).catch(err=>{
                 console.log(err)
-                res.status(400).json({mess:"error occure in deleting department"})
+                res.status(400).json({mess:"error occure in deleting contact"})
             })
            
         })
@@ -102,46 +102,27 @@ const routes={
         })
     },
 
-    getDepartmentById:(req,res)=>{
+    getcontactById:(req,res)=>{
         const{id}=req.query
         if (!id) {
-            res.status(400).json({mess:"please provide DepartmentId"});
+            res.status(400).json({mess:"please provide contactId"});
             return;
         }
 
-        db.department.findAll({where:{id}})
+        db.contact.findAll({where:{id}})
         .then(c=>{
             if (c) {
                 res.status(200).json({list:c});
                 return;
             }
-            res.status(400).json({mess:"department not available"})
+            res.status(400).json({mess:"contact not available"})
         })
         .catch(err=>{
             console.log(err)
             res.status(400).json({mess:"some error occure at server"})
         })
     },
-    getDepartmentByName:(req,res)=>{
-        const{name}=req.query
-        if (!name) {
-            res.status(400).json({mess:"please provide Department Name"});
-            return;
-        }
 
-        db.department.findAll({where:{name}})
-        .then(c=>{
-            if (c) {
-                res.status(200).json({list:c});
-                return;
-            }
-            res.status(400).json({mess:"department not available"})
-        })
-        .catch(err=>{
-            console.log(err)
-            res.status(400).json({mess:"some error occure at server"})
-        })
-    },
 
 }
 

@@ -18,7 +18,8 @@ if (config.use_env_variable) {
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_DATABASE,
     host: process.env.DATABASE_HOST,
-    dialect: process.env.DATABASE_DIALECT
+    dialect: process.env.DATABASE_DIALECT,
+    logging:false
   });
   sequelize.authenticate().then(()=>{
     console.log("database connected")

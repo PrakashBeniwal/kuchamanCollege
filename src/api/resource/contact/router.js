@@ -1,5 +1,5 @@
 const express=require('express');
-const routes = require('./department.controller');
+const routes = require('./controller');
 
 
 const router=express.Router();
@@ -7,7 +7,6 @@ const router=express.Router();
 router.route("/create").post(routes.create);
 router.route("/list").get(routes.list);
 router.route("/delete").delete(routes.delete);
-router.route("/getDepartmentById").get(routes.getDepartmentById);
-router.route("/getDepartmentByName").get(routes.getDepartmentByName);
+router.route("/getcontactById").get(routes.getcontactById);
 
 module.exports=router;

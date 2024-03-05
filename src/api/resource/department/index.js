@@ -1,6 +1,1 @@
-// const authrouter = require("./auth.router");
-
-module.exports={departmentrouter}=require("./department.router");
-
-
-
+module.exports=router=require("./department.router");
