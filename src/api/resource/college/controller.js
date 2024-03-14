@@ -54,7 +54,7 @@ const routes={
                 return;
             }
             db.college.create({
-                university,name,about,phone,email,city,district,state:rajya
+                university,name,about,phone,email,city,district,state
             })
             .then(result=>{
                 if (result) {
