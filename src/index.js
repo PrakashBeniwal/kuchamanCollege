@@ -25,7 +25,8 @@ app.use(passport.session());
 
 app.use('/api',restrouter)
 
-app.use(express.static(`${__dirname}/static`))
+app.use(express.static(`${__dirname}/static`));
+app.use('/public',express.static(`${__dirname}/upload/photos`));
 app.get('/',(req,res)=>{
     // res.sendFile(`${__dirname}/static/index.html`)
     res.json("hello")

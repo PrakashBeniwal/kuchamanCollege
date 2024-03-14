@@ -1,8 +1,9 @@
 const db = require("../../../../models");
+const delImg = require("../../../upload/delete");
 
 const routes={
      create:(req,res)=>{
-        const{name,about,image}=req.body;
+        const{name,about}=req.body;
 
         if (!name||!about) {
             res.status(400).json({mess:"please provide name and about"});
@@ -15,7 +16,7 @@ const routes={
         .then(department=>{
             if (department) {
                 department.update({
-                    name,about,image
+                    name,about,image:req.file?.filename?req.file?.filename:department.image
                 })
                 .then(result=>{
                     if (result) {
@@ -32,7 +33,7 @@ const routes={
                 return;
             }
             db.department.create({
-                name,about,image
+                name,about,image:req.file.filename?req.file.filename:""
             })
             .then(result=>{
                 if (result) {
@@ -86,19 +87,42 @@ const routes={
             c.destroy()
             .then(success=>{
                 if (success) {
-                    res.status(200).json({mess:"successfully deleted department"})
+                    if (success) {
+                        if (success.image) {
+                            delImg(success.image)
+                        .then(result=>{
+                            if (result) {
+                               return res.status(200).json({mess:"successfully deleted department"})
+                                
+                            }else{
+                                res.status(400).json({mess:"error in deleting department image"});
+                                return;
+                            }
+                        
+                        }).catch(err=>{
+                            console.log(err);
+                            return;
+                        })
+                        return;
+                        }
+                        res.status(200).json({mess:"successfully deleted department"})
+                       return;
+                    }
                     return;
                 }
                 res.status(400).json({mess:"error in  deleting department"})
+                return
             }).catch(err=>{
                 console.log(err)
                 res.status(400).json({mess:"error occure in deleting department"})
+                return;
             })
            
         })
         .catch(err=>{
             console.log(err)
-            res.status(400).json({mess:"some error occure at server"})
+            res.status(400).json({mess:"some error occure at server"});
+            return
         })
     },
 
@@ -142,6 +166,7 @@ const routes={
             res.status(400).json({mess:"some error occure at server"})
         })
     },
+
 
 }
 

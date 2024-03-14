@@ -1,11 +1,12 @@
 const db = require("../../../../models");
+const delImg = require("../../../upload/delete");
 
 const routes={
      create:(req,res)=>{
         const{name,post,number,image}=req.body;
 
-        if (!name||!post||!image) {
-            res.status(400).json({mess:"please provide name ,image and post "});
+        if (!name||!post) {
+            res.status(400).json({mess:"please provide name  and post "});
             return;
         }
 
@@ -15,7 +16,7 @@ const routes={
         .then(member=>{
             if (member) {
                 member.update({
-                    name,post,image,number
+                    name,post,image:req.file?.filename?req.file?.filename:member.image,number
                 })
                 .then(result=>{
                     if (result) {
@@ -32,7 +33,7 @@ const routes={
                 return;
             }
             db.member.create({
-                name,post,image,number
+                name,post,image:req.file?.filename?req.file?.filename:"",number
             })
             .then(result=>{
                 if (result) {
@@ -86,6 +87,23 @@ const routes={
             c.destroy()
             .then(success=>{
                 if (success) {
+                    if (success.image) {
+                        delImg(success.image)
+                    .then(result=>{
+                        if (result) {
+                           return res.status(200).json({mess:"successfully deleted member"})
+                            
+                        }else{
+                            res.status(400).json({mess:"error in deleting member image"});
+                            return;
+                        }
+                    
+                    }).catch(err=>{
+                        console.log(err);
+                        return;
+                    })
+                    return;
+                    }
                     res.status(200).json({mess:"successfully deleted member"})
                     return;
                 }
