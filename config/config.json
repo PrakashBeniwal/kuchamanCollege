@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "college",
-    "host": "127.0.0.1",
+    "username": "freedb_college",
+    "password": "%#Qh25qtgGz@2Sn",
+    "database": "freedb_prakash",
+    "host": "sql.freedb.tech",
     "dialect": "mysql"
   },
   "test": {

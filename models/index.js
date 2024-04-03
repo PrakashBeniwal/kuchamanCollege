@@ -13,13 +13,14 @@ let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password,{
+  sequelize = new Sequelize(process.env.DATABASE_DATABASE, process.env.DATABASE_USERNAME, process.env.DATABASE_PASSWORD,{
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_DATABASE,
     host: process.env.DATABASE_HOST,
     dialect: process.env.DATABASE_DIALECT,
-    logging:false
+    port:3306,
+    logging:false,
   });
   sequelize.authenticate().then(()=>{
     console.log("database connected")

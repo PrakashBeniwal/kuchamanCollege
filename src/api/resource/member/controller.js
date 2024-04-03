@@ -1,166 +1,172 @@
 const db = require("../../../../models");
+const deleteS3Img = require("../../../aws/delImg");
 const delImg = require("../../../upload/delete");
 
-const routes={
-     create:(req,res)=>{
-        const{name,post,number,image}=req.body;
+const routes = {
+    create: (req, res) => {
+        const { name, post, number, image } = req.body;
 
-        if (!name||!post) {
-            res.status(400).json({mess:"please provide name  and post "});
+        if (!name || !post) {
+            res.status(400).json({ mess: "please provide name  and post " });
             return;
         }
 
         db.member.findOne({
-            where:{name}
+            where: { name }
         })
-        .then(member=>{
-            if (member) {
-                member.update({
-                    name,post,image:req.file?.filename?req.file?.filename:member.image,number
-                })
-                .then(result=>{
-                    if (result) {
-                        res.status(200).json({mess:"successfully updated member"});
-                        return;
-                    }
-                    res.status(400).json({mess:"cannot updated member"});
-                    return;
-                })
-                .catch(err=>{
-                    console.log(err)
-                    res.status(400).json({err:"some error occure"})
-                })
-                return;
-            }
-            db.member.create({
-                name,post,image:req.file?.filename?req.file?.filename:"",number
-            })
-            .then(result=>{
-                if (result) {
-                    res.status(200).json({mess:"successfully created member"});
+            .then(async(member) => {
+                if (member) {
+                    if (image && member.image) {
+                        await  deleteS3Img(member.image)
+                  }
+                        member.update({
+                            name, post, image: image?image:member.image, number
+                            // name,post,image:req.file?.filename?req.file?.filename:member.image,number
+                        })
+                            .then(result => {
+                                if (result) {
+                                    res.status(200).json({ mess: "successfully updated member" });
+                                    return;
+                                }
+                                res.status(400).json({ mess: "cannot updated member" });
+                                return;
+                            })
+                            .catch(err => {
+                                console.log(err)
+                                res.status(400).json({ err: "some error occure" })
+                            })
+                    
                     return;
                 }
-                res.status(400).json({mess:"cannot created member"});
-                return;
+                db.member.create({
+                    name, post, image, number
+                })
+                    .then(result => {
+                        if (result) {
+                            res.status(200).json({ mess: "successfully created member" });
+                            return;
+                        }
+                        res.status(400).json({ mess: "cannot created member" });
+                        return;
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        res.status(400).json({ err: "some error occure" })
+                    })
             })
-            .catch(err=>{
+            .catch(err => {
                 console.log(err)
-                res.status(400).json({err:"some error occure"})
+                res.status(400).json({ err: "some error occure" })
             })
-        })
-        .catch(err=>{
-            console.log(err)
-            res.status(400).json({err:"some error occure"})
-        })
 
     },
 
-    list:(req,res)=>{
+    list: (req, res) => {
         db.member.findAll()
-        .then(c=>{
-            if (c.length>0) {
-                res.status(200).json({list:c});
-                return;
-            }
-            res.status(400).json({mess:"members not available"})
-        })
-        .catch(err=>{
-            console.log(err)
-            res.status(400).json({mess:"some error occure at server"})
-        })
+            .then(c => {
+                if (c.length > 0) {
+                    res.status(200).json({ list: c });
+                    return;
+                }
+                res.status(200).json({list:[], mess: "members not available" })
+            })
+            .catch(err => {
+                console.log(err)
+                res.status(400).json({ mess: "some error occure at server" })
+            })
     },
 
-    delete:(req,res)=>{
-        const{id}=req.query
+    delete: (req, res) => {
+        const { id } = req.query
 
         if (!id) {
-            res.status(400).json({mess:"please provide memberId"});
+            res.status(400).json({ mess: "please provide memberId" });
             return;
         }
 
         db.member.findByPk(id)
-        .then(c=>{
-            if (!c) {
-                res.status(400).json({mess:"member not exist"})
-                return;
-            }
-            c.destroy()
-            .then(success=>{
-                if (success) {
-                    if (success.image) {
-                        delImg(success.image)
-                    .then(result=>{
-                        if (result) {
-                           return res.status(200).json({mess:"successfully deleted member"})
-                            
-                        }else{
-                            res.status(400).json({mess:"error in deleting member image"});
-                            return;
-                        }
-                    
-                    }).catch(err=>{
-                        console.log(err);
-                        return;
-                    })
-                    return;
-                    }
-                    res.status(200).json({mess:"successfully deleted member"})
+            .then(c => {
+                if (!c) {
+                    res.status(400).json({ mess: "member not exist" })
                     return;
                 }
-                res.status(400).json({mess:"error in  deleting member"})
-            }).catch(err=>{
-                console.log(err)
-                res.status(400).json({mess:"error occure in deleting member"})
+                c.destroy()
+                    .then(success => {
+                        if (success) {
+                            if (success.image) {
+                                deleteS3Img(success.image)
+                                    .then(result => {
+                                        if (result) {
+                                            return res.status(200).json({ mess: "successfully deleted member" })
+
+                                        } else {
+                                            res.status(400).json({ mess: "error in deleting member image" });
+                                            return;
+                                        }
+
+                                    }).catch(err => {
+                                        console.log(err);
+                                        return;
+                                    })
+                                return;
+                            }
+                            res.status(200).json({ mess: "successfully deleted member" })
+                            return;
+                        }
+                        res.status(400).json({ mess: "error in  deleting member" })
+                    }).catch(err => {
+                        console.log(err)
+                        res.status(400).json({ mess: "error occure in deleting member" })
+                    })
+
             })
-           
-        })
-        .catch(err=>{
-            console.log(err)
-            res.status(400).json({mess:"some error occure at server"})
-        })
+            .catch(err => {
+                console.log(err)
+                res.status(400).json({ mess: "some error occure at server" })
+            })
     },
 
-    getmemberById:(req,res)=>{
-        const{id}=req.query
+    getmemberById: (req, res) => {
+        const { id } = req.query
         if (!id) {
-            res.status(400).json({mess:"please provide memberId"});
+            res.status(400).json({ mess: "please provide memberId" });
             return;
         }
 
-        db.member.findAll({where:{id}})
-        .then(c=>{
-            if (c) {
-                res.status(200).json({list:c});
-                return;
-            }
-            res.status(400).json({mess:"member not available"})
-        })
-        .catch(err=>{
-            console.log(err)
-            res.status(400).json({mess:"some error occure at server"})
-        })
+        db.member.findAll({ where: { id } })
+            .then(c => {
+                if (c) {
+                    res.status(200).json({ list: c });
+                    return;
+                }
+                res.status(400).json({ mess: "member not available" })
+            })
+            .catch(err => {
+                console.log(err)
+                res.status(400).json({ mess: "some error occure at server" })
+            })
     },
-    getmemberByName:(req,res)=>{
-        const{name}=req.query
+    getmemberByName: (req, res) => {
+        const { name } = req.query
         if (!name) {
-            res.status(400).json({mess:"please provide member Name"});
+            res.status(400).json({ mess: "please provide member Name" });
             return;
         }
 
-        db.member.findAll({where:{name}})
-        .then(c=>{
-            if (c) {
-                res.status(200).json({list:c});
-                return;
-            }
-            res.status(400).json({mess:"member not available"})
-        })
-        .catch(err=>{
-            console.log(err)
-            res.status(400).json({mess:"some error occure at server"})
-        })
+        db.member.findAll({ where: { name } })
+            .then(c => {
+                if (c) {
+                    res.status(200).json({ list: c });
+                    return;
+                }
+                res.status(400).json({ mess: "member not available" })
+            })
+            .catch(err => {
+                console.log(err)
+                res.status(400).json({ mess: "some error occure at server" })
+            })
     },
 
 }
 
-module.exports=routes;
+module.exports = routes;

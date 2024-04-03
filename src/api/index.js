@@ -5,6 +5,7 @@ const syllabus = require('./resource/syllabus');
 const contact = require('./resource/contact');
 const college = require('./resource/college');
 const member = require('./resource/member');
+const image = require('./resource/image');
 
 
 
@@ -16,6 +17,7 @@ restrouter.use('/syllabus',syllabus)
 restrouter.use('/contact',contact)
 restrouter.use('/college',college)
 restrouter.use('/member',member)
+restrouter.use('/image',image)
 
 
 module.exports=restrouter;
